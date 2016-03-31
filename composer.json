@@ -1,0 +1,27 @@
+{
+  "name": "psx/uri",
+  "description": "URI, URL and URN value objects",
+  "keywords": ["uri", "url", "urn"],
+  "homepage": "http://phpsx.org",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Christoph Kappestein",
+      "email": "christoph.kappestein@gmail.com",
+      "homepage": "http://christoph.kappestein.com/"
+    }
+  ],
+  "require": {
+    "php": ">=5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "PSX\\Uri\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PSX\\Uri\\Tests\\": "tests/"
+    }
+  }
+}
