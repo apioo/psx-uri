@@ -307,7 +307,7 @@ class Uri implements UriInterface
      */
     protected function parse($uri)
     {
-        $uri     = rawurldecode((string) $uri);
+        $uri     = (string) $uri;
         $matches = array();
 
         preg_match('!' . self::getPattern() . '!', $uri, $matches);

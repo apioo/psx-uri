@@ -45,6 +45,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/rfc/rfc1808.txt', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('ftp://ftp.is.co.za/rfc/rfc1808.txt', $uri->toString());
     }
 
@@ -62,6 +63,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/rfc/rfc2396.txt', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('http://www.ietf.org/rfc/rfc2396.txt', $uri->toString());
     }
 
@@ -79,6 +81,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/c=GB', $uri->getPath());
         $this->assertEquals('objectClass?one', $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['objectClass?one' => ''], $uri->getParameters());
         $this->assertEquals('ldap://[2001:db8::7]/c=GB?objectClass?one', $uri->toString());
     }
 
@@ -96,6 +99,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/c=GB', $uri->getPath());
         $this->assertEquals('objectClass?one', $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['objectClass?one' => ''], $uri->getParameters());
         $this->assertEquals('ldap://[2001:db8::7]:80/c=GB?objectClass?one', $uri->toString());
     }
 
@@ -116,6 +120,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/c=GB', $uri->getPath());
         $this->assertEquals('objectClass?one', $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['objectClass?one' => ''], $uri->getParameters());
         $this->assertEquals('ldap://foo@[2001:db8::7/c=GB?objectClass?one', $uri->toString());
     }
 
@@ -133,6 +138,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('John.Doe@example.com', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('mailto:John.Doe@example.com', $uri->toString());
     }
 
@@ -150,6 +156,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('mailto://John.Doe@example.com', $uri->toString());
     }
 
@@ -167,6 +174,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('comp.infosystems.www.servers.unix', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('news:comp.infosystems.www.servers.unix', $uri->toString());
     }
 
@@ -184,6 +192,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('+1-816-555-1212', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('tel:+1-816-555-1212', $uri->toString());
     }
 
@@ -201,6 +210,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('telnet://192.0.2.16:80/', $uri->toString());
     }
 
@@ -218,6 +228,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('oasis:names:specification:docbook:dtd:xml:4.1.2', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('urn:oasis:names:specification:docbook:dtd:xml:4.1.2', $uri->toString());
     }
 
@@ -235,6 +246,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/over/there', $uri->getPath());
         $this->assertEquals('name=ferret&foo=bar', $uri->getQuery());
         $this->assertEquals('nose', $uri->getFragment());
+        $this->assertEquals(['name' => 'ferret', 'foo' => 'bar'], $uri->getParameters());
         $this->assertEquals('foo://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose', $uri->toString());
     }
 
@@ -250,6 +262,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/foo/bar', $uri->getPath());
         $this->assertEquals('param=value', $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['param' => 'value'], $uri->getParameters());
         $this->assertEquals('/foo/bar?param=value', $uri->toString());
     }
 
@@ -265,6 +278,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/foo/bar', $uri->getPath());
         $this->assertEquals('foo=bar', $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['foo' => 'bar'], $uri->getParameters());
         $this->assertEquals('//google.com/foo/bar?foo=bar', $uri->toString());
     }
 
@@ -280,7 +294,44 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/c:/somedir/file.txt', $uri->getPath());
         $this->assertEquals(null, $uri->getQuery());
         $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals([], $uri->getParameters());
         $this->assertEquals('file:/c:/somedir/file.txt', $uri->toString());
+    }
+
+    public function testUrlEncode()
+    {
+        $uri = new Uri('http://foo.com?url=' . urlencode('http://google.de'));
+
+        $this->assertEquals('http', $uri->getScheme());
+        $this->assertEquals('foo.com', $uri->getAuthority());
+        $this->assertEquals(null, $uri->getUserInfo());
+        $this->assertEquals(null, $uri->getUser());
+        $this->assertEquals(null, $uri->getPassword());
+        $this->assertEquals('foo.com', $uri->getHost());
+        $this->assertEquals(null, $uri->getPort());
+        $this->assertEquals('', $uri->getPath());
+        $this->assertEquals('url=http%3A%2F%2Fgoogle.de', $uri->getQuery());
+        $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['url' => 'http://google.de'], $uri->getParameters());
+        $this->assertEquals('http://foo.com?url=http%3A%2F%2Fgoogle.de', $uri->toString());
+    }
+
+    public function testNoUrlEncode()
+    {
+        $uri = new Uri('http://foo.com?url=http://google.de');
+
+        $this->assertEquals('http', $uri->getScheme());
+        $this->assertEquals('foo.com', $uri->getAuthority());
+        $this->assertEquals(null, $uri->getUserInfo());
+        $this->assertEquals(null, $uri->getUser());
+        $this->assertEquals(null, $uri->getPassword());
+        $this->assertEquals('foo.com', $uri->getHost());
+        $this->assertEquals(null, $uri->getPort());
+        $this->assertEquals('', $uri->getPath());
+        $this->assertEquals('url=http://google.de', $uri->getQuery());
+        $this->assertEquals(null, $uri->getFragment());
+        $this->assertEquals(['url' => 'http://google.de'], $uri->getParameters());
+        $this->assertEquals('http://foo.com?url=http://google.de', $uri->toString());
     }
 
     public function testEmptyString()

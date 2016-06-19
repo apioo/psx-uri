@@ -60,7 +60,7 @@ class Urn extends Uri
     protected function parse($urn)
     {
         // URNs are case insensitive
-        $urn = strtolower((string) $urn);
+        $urn = strtolower(rawurldecode((string) $urn));
 
         parent::parse($urn);
 

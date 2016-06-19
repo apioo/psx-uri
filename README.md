@@ -17,6 +17,7 @@ $uri = new Uri('/bar?foo=bar');
 
 $uri->getPath(); // /bar
 $uri->getQuery(); // foo=bar
+$uri->getParameters(); // ['foo' => 'bar']
 
 $uri = $uri->withScheme('https');
 $uri = $uri->withScheme('foo.com');
