@@ -464,6 +464,29 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://www.yahoo.com/?foo=bar&bar=foo', $uri->toString());
     }
 
+    public function testIsAbsolute()
+    {
+        $uri = new Uri('http://www.yahoo.com/foo?foo=bar&bar=foo');
+        $this->assertTrue($uri->isAbsolute());
+
+        $uri = new Uri('/foo?foo=bar&bar=foo');
+        $this->assertFalse($uri->isAbsolute());
+    }
+
+    public function testGetParameters()
+    {
+        $uri = new Uri('http', 'www.yahoo.com', '/foo', 'foo=bar&bar=foo');
+
+        $this->assertEquals(['foo' => 'bar', 'bar' => 'foo'], $uri->getParameters());
+    }
+
+    public function testGetParameter()
+    {
+        $uri = new Uri('http', 'www.yahoo.com', '/foo', 'foo=bar&bar=foo');
+
+        $this->assertEquals('bar', $uri->getParameter('foo'));
+    }
+
     public function testSetFragment()
     {
         $uri = new Uri('http', 'www.yahoo.com', '/', null, 'foo');
@@ -561,6 +584,10 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@google.com:8042/over/there?name=ferret&foo=bar#nose', $uri->withHost('google.com')->toString());
+
+        $uri = new Uri('http://www.yahoo.com/foo/');
+
+        $this->assertEquals('http:/foo/', $uri->withHost(null)->toString());
     }
 
     public function testWithPort()
@@ -572,5 +599,12 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@example.com:8080/over/there?name=ferret&foo=bar#nose', $uri->withPort(8080)->toString());
+    }
+
+    public function test__toString()
+    {
+        $uri = new Uri('http://www.yahoo.com/');
+
+        $this->assertEquals('http://www.yahoo.com/', (string) $uri);
     }
 }
