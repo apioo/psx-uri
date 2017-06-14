@@ -38,16 +38,54 @@ use Psr\Http\Message\UriInterface;
  */
 class Uri implements UriInterface
 {
+    /**
+     * @var string
+     */
     protected $scheme;
+
+    /**
+     * @var string
+     */
     protected $authority;
+
+    /**
+     * @var string
+     */
     protected $path;
+
+    /**
+     * @var string
+     */
     protected $query;
+
+    /**
+     * @var string
+     */
     protected $fragment;
 
+    /**
+     * @var string
+     */
     protected $user;
+
+    /**
+     * @var string
+     */
     protected $password;
+
+    /**
+     * @var string
+     */
     protected $host;
+
+    /**
+     * @var string
+     */
     protected $port;
+
+    /**
+     * @var array
+     */
     protected $parameters;
 
     public function __construct($uri, $authority = null, $path = null, $query = null, $fragment = null)
@@ -128,6 +166,11 @@ class Uri implements UriInterface
     public function getParameters()
     {
         return $this->parameters;
+    }
+
+    public function getParameter($name)
+    {
+        return isset($this->parameters[$name]) ? $this->parameters[$name] : null;
     }
 
     public function withScheme($scheme)
