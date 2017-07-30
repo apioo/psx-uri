@@ -1,4 +1,8 @@
 
+### 1.0.3 (2017-07-30)
+
+* UriResolver does not remove dot segments for absolute target uris
+
 ### 1.0.2 (2017-06-14)
 
 * Improved test cases
