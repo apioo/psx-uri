@@ -109,12 +109,19 @@ class UriResolverTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testRemoveDotSegments()
+    /**
+     * @dataProvider removeDotSegmentsProvider
+     */
+    public function testRemoveDotSegments($path, $expect)
     {
-        $r = UriResolver::removeDotSegments('/a/b/c/./../../g');
-        $e = '/a/g';
+        $this->assertEquals($expect, UriResolver::removeDotSegments($path));
+    }
 
-        $this->assertEquals($e, $r);
+    public function removeDotSegmentsProvider()
+    {
+        return [
+            ['/a/b/c/./../../g', '/a/g'],
+        ];
     }
 
     public function testPercentEncode()

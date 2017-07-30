@@ -50,7 +50,7 @@ class UriResolver
             $path = $targetUri->getPath();
 
             if (!empty($path)) {
-                return $targetUri->withPath(self::removeDotSegments($path));
+                return $targetUri->withPath($path);
             } else {
                 return $targetUri;
             }
