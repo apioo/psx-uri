@@ -1,4 +1,9 @@
 
+### 1.0.4 (2018-02-13)
+
+* Improve php docs
+* Add UriInterface
+
 ### 1.0.3 (2017-07-30)
 
 * UriResolver does not remove dot segments for absolute target uris
