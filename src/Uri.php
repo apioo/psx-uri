@@ -20,16 +20,8 @@
 
 namespace PSX\Uri;
 
-use Psr\Http\Message\UriInterface;
-
 /**
- * Represents a URI. Provides getters to retrieve parts of the URI. The class
- * tries to parse the given string into the URI specific components:
- *
- *   foo://example.com:8042/over/there?name=ferret#nose
- *   \_/   \______________/\_________/ \_________/ \__/
- *    |           |            |            |        |
- * scheme     authority       path        query   fragment
+ * Uri
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -88,6 +80,13 @@ class Uri implements UriInterface
      */
     protected $parameters;
 
+    /**
+     * @param string $uri
+     * @param string $authority
+     * @param string $path
+     * @param string $query
+     * @param string $fragment
+     */
     public function __construct($uri, $authority = null, $path = null, $query = null, $fragment = null)
     {
         if (func_num_args() == 1) {
@@ -104,16 +103,25 @@ class Uri implements UriInterface
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getScheme()
     {
         return $this->scheme;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAuthority()
     {
         return $this->authority;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getUserInfo()
     {
         if (!empty($this->user)) {
@@ -123,56 +131,89 @@ class Uri implements UriInterface
         }
     }
 
+    /**
+     * @return string
+     */
     public function getUser()
     {
         return $this->user;
     }
 
+    /**
+     * @return string
+     */
     public function getPassword()
     {
         return $this->password;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getHost()
     {
         return $this->host;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getPort()
     {
         return $this->port;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getQuery()
     {
         return $this->query;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getFragment()
     {
         return $this->fragment;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isAbsolute()
     {
         return !empty($this->scheme);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getParameters()
     {
         return $this->parameters;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getParameter($name)
     {
         return isset($this->parameters[$name]) ? $this->parameters[$name] : null;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withScheme($scheme)
     {
         return new static(
@@ -184,6 +225,10 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @param string $authority
+     * @return static
+     */
     public function withAuthority($authority)
     {
         return new static(
@@ -195,6 +240,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withUserInfo($user, $password = null)
     {
         if (!empty($user)) {
@@ -217,6 +265,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withHost($host)
     {
         if (!empty($host)) {
@@ -243,6 +294,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withPort($port)
     {
         $userInfo = $this->getUserInfo();
@@ -265,6 +319,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withPath($path)
     {
         return new static(
@@ -276,6 +333,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withQuery($query)
     {
         return new static(
@@ -287,6 +347,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withFragment($fragment)
     {
         return new static(
@@ -298,6 +361,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function withParameters(array $parameters)
     {
         return $this->withQuery(http_build_query($parameters, '', '&'));
@@ -371,6 +437,9 @@ class Uri implements UriInterface
         $this->parseParameters($query);
     }
 
+    /**
+     * @param string $authority
+     */
     protected function parseAuthority($authority)
     {
         if (empty($authority)) {
@@ -411,6 +480,9 @@ class Uri implements UriInterface
         }
     }
 
+    /**
+     * @param string $query
+     */
     protected function parseParameters($query)
     {
         if (!empty($query)) {
