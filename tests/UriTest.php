@@ -20,6 +20,7 @@
 
 namespace PSX\Uri\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Uri\Uri;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Uri\Uri;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class UriTest extends \PHPUnit_Framework_TestCase
+class UriTest extends TestCase
 {
     public function testRfcExample1()
     {

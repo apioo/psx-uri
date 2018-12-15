@@ -20,6 +20,7 @@
 
 namespace PSX\Uri\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Uri\Uri;
 use PSX\Uri\UriResolver;
 
@@ -30,7 +31,7 @@ use PSX\Uri\UriResolver;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class UriResolverTest extends \PHPUnit_Framework_TestCase
+class UriResolverTest extends TestCase
 {
     /**
      * @dataProvider uriResolveNormalProvider

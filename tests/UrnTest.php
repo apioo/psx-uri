@@ -20,6 +20,7 @@
 
 namespace PSX\Uri\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Uri\Urn;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Uri\Urn;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class UrnTest extends \PHPUnit_Framework_TestCase
+class UrnTest extends TestCase
 {
     public function testUrn()
     {
