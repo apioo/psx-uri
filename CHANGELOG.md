@@ -1,4 +1,8 @@
 
+### 1.0.5 (2018-12-15)
+
+* Upgrade PHPUnit to 6.0
+
 ### 1.0.4 (2018-02-13)
 
 * Improve php docs
