@@ -57,10 +57,10 @@ class Urn extends Uri
         return $this->nss;
     }
 
-    protected function parse($urn)
+    protected function parse($uri)
     {
         // URNs are case insensitive
-        $urn = strtolower(rawurldecode((string) $urn));
+        $urn = strtolower(rawurldecode((string) $uri));
 
         parent::parse($urn);
 

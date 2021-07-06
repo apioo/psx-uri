@@ -35,9 +35,9 @@ use InvalidArgumentException;
  */
 class Url extends Uri
 {
-    protected function parse($url)
+    protected function parse($uri)
     {
-        $url = (string) $url;
+        $url = (string) $uri;
 
         // append http scheme for urls starting with //. Normally // means that
         // we use the scheme from the base url but in this context there is no

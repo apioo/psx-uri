@@ -71,7 +71,7 @@ class Uri implements UriInterface
     protected $host;
 
     /**
-     * @var string
+     * @var int|null
      */
     protected $port;
 
@@ -455,7 +455,7 @@ class Uri implements UriInterface
 
             if ($pos !== false) {
                 $this->host = substr($part, 0, $pos + 1);
-                $this->port = substr($part, $pos + 2);
+                $this->port = (int) substr($part, $pos + 2);
             } else {
                 $this->host = $part;
             }
@@ -466,7 +466,7 @@ class Uri implements UriInterface
                 $this->host = $part;
             } else {
                 $this->host = $host;
-                $this->port = substr(strstr($part, ':'), 1);
+                $this->port = (int) substr(strstr($part, ':'), 1);
             }
         }
 
