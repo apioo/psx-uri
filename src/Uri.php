@@ -46,14 +46,14 @@ class Uri implements UriInterface
         $this->parse((string) $uri);
     }
 
-    public function getScheme(): ?string
+    public function getScheme(): string
     {
-        return $this->scheme;
+        return $this->scheme ?? '';
     }
 
-    public function getAuthority(): ?string
+    public function getAuthority(): string
     {
-        return $this->authority;
+        return $this->authority ?? '';
     }
 
     public function getUserInfo(): string
@@ -75,9 +75,9 @@ class Uri implements UriInterface
         return $this->password;
     }
 
-    public function getHost(): ?string
+    public function getHost(): string
     {
-        return $this->host;
+        return $this->host ?? '';
     }
 
     public function getPort(): ?int
@@ -85,19 +85,19 @@ class Uri implements UriInterface
         return $this->port;
     }
 
-    public function getPath(): ?string
+    public function getPath(): string
     {
-        return $this->path;
+        return $this->path ?? '';
     }
 
-    public function getQuery(): ?string
+    public function getQuery(): string
     {
-        return $this->query;
+        return $this->query ?? '';
     }
 
-    public function getFragment(): ?string
+    public function getFragment(): string
     {
-        return $this->fragment;
+        return $this->fragment ?? '';
     }
 
     public function isAbsolute(): bool
