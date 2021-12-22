@@ -39,32 +39,22 @@ use Psr\Http\Message\UriInterface as PsrUriInterface;
 interface UriInterface extends PsrUriInterface
 {
     /**
-     * Tells whether or not this URI is absolute
-     * 
-     * @return boolean
+     * Returns whether this URI is absolute
      */
-    public function isAbsolute();
+    public function isAbsolute(): bool;
 
     /**
      * Returns all parameters from the query fragment as array
-     * 
-     * @return array
      */
-    public function getParameters();
+    public function getParameters(): array;
 
     /**
      * Returns a specific query parameter
-     * 
-     * @param string $name
-     * @return mixed
      */
-    public function getParameter($name);
+    public function getParameter(string $name): mixed;
 
     /**
      * Creates a new URI with the provided parameters
-     * 
-     * @param array $parameters
-     * @return static
      */
-    public function withParameters(array $parameters);
+    public function withParameters(array $parameters): static;
 }

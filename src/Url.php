@@ -20,7 +20,7 @@
 
 namespace PSX\Uri;
 
-use InvalidArgumentException;
+use PSX\Uri\Exception\InvalidFormatException;
 
 /**
  * Represents a URL. A string is only a valid URL if it has a scheme and host
@@ -50,13 +50,13 @@ class Url extends Uri
 
         // we need at least a scheme and host
         if (empty($this->scheme) || empty($this->host)) {
-            throw new InvalidArgumentException('Invalid url syntax');
+            throw new InvalidFormatException('Invalid url syntax');
         }
 
         // check port if available
         if ($this->port !== null) {
             if ($this->port < 1 || $this->port > 0xFFFF) {
-                throw new InvalidArgumentException('Invalid port range');
+                throw new InvalidFormatException('Invalid port range');
             }
         }
     }

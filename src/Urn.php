@@ -21,6 +21,7 @@
 namespace PSX\Uri;
 
 use InvalidArgumentException;
+use PSX\Uri\Exception\InvalidFormatException;
 
 /**
  * Represents a URN. This class exists mostly to express in your code that
@@ -34,25 +35,21 @@ use InvalidArgumentException;
  */
 class Urn extends Uri
 {
-    protected $nid;
-    protected $nss;
+    protected ?string $nid = null;
+    protected ?string $nss = null;
 
     /**
      * Returns the NID (Namespace Identifier)
-     *
-     * @return string
      */
-    public function getNid()
+    public function getNid(): ?string
     {
         return $this->nid;
     }
 
     /**
      * Returns the NSS (Namespace Specific String)
-     *
-     * @return string
      */
-    public function getNss()
+    public function getNss(): ?string
     {
         return $this->nss;
     }
@@ -66,7 +63,7 @@ class Urn extends Uri
 
         // must have an urn scheme and path part
         if ($this->scheme != 'urn' || empty($this->path)) {
-            throw new InvalidArgumentException('Invalid urn syntax');
+            throw new InvalidFormatException('Invalid urn syntax');
         }
 
         // parse

@@ -349,13 +349,6 @@ class UriTest extends TestCase
         $this->assertEquals('foo', $uri->toString());
     }
 
-    public function testNullValue()
-    {
-        $uri = new Uri(null);
-
-        $this->assertEquals(null, $uri->toString());
-    }
-
     /**
      * Test to check whether we can materialize the URI into an string form
      * without loosing any information
@@ -395,7 +388,7 @@ class UriTest extends TestCase
 
     public function testSetScheme()
     {
-        $uri = new Uri('https', 'www.yahoo.com');
+        $uri = new Uri('https://www.yahoo.com');
 
         $this->assertEquals('https', $uri->getScheme());
         $this->assertEquals('https://www.yahoo.com', $uri->toString());
@@ -403,7 +396,7 @@ class UriTest extends TestCase
 
     public function testSetUser()
     {
-        $uri = new Uri('http', 'foo@www.yahoo.com');
+        $uri = new Uri('http://foo@www.yahoo.com');
 
         $this->assertEquals('foo', $uri->getUserInfo());
         $this->assertEquals('foo', $uri->getUser());
@@ -412,7 +405,7 @@ class UriTest extends TestCase
 
     public function testSetPassword()
     {
-        $uri = new Uri('http', 'www.yahoo.com');
+        $uri = new Uri('http://www.yahoo.com');
 
         $this->assertEquals(null, $uri->getPassword());
         $this->assertEquals('http://www.yahoo.com', $uri->toString());
@@ -420,7 +413,7 @@ class UriTest extends TestCase
 
     public function testSetUserPassword()
     {
-        $uri = new Uri('http', 'foo:bar@www.yahoo.com');
+        $uri = new Uri('http://foo:bar@www.yahoo.com');
 
         $this->assertEquals('foo:bar', $uri->getUserInfo());
         $this->assertEquals('foo', $uri->getUser());
@@ -430,7 +423,7 @@ class UriTest extends TestCase
 
     public function testSetHost()
     {
-        $uri = new Uri('http', 'google.com');
+        $uri = new Uri('http://google.com');
 
         $this->assertEquals('google.com', $uri->getAuthority());
         $this->assertEquals('google.com', $uri->getHost());
@@ -440,7 +433,7 @@ class UriTest extends TestCase
 
     public function testSetPort()
     {
-        $uri = new Uri('http', 'www.yahoo.com:8080');
+        $uri = new Uri('http://www.yahoo.com:8080');
 
         $this->assertEquals('www.yahoo.com:8080', $uri->getAuthority());
         $this->assertEquals('www.yahoo.com', $uri->getHost());
@@ -450,7 +443,7 @@ class UriTest extends TestCase
 
     public function testSetPath()
     {
-        $uri = new Uri('http', 'www.yahoo.com', '/foo');
+        $uri = new Uri('http://www.yahoo.com/foo');
 
         $this->assertEquals('/foo', $uri->getPath());
         $this->assertEquals('http://www.yahoo.com/foo', $uri->toString());
@@ -458,7 +451,7 @@ class UriTest extends TestCase
 
     public function testSetQuery()
     {
-        $uri = new Uri('http', 'www.yahoo.com', '/', 'foo=bar&bar=foo');
+        $uri = new Uri('http://www.yahoo.com/?foo=bar&bar=foo');
 
         $this->assertEquals('foo=bar&bar=foo', $uri->getQuery());
         $this->assertEquals(['foo' => 'bar', 'bar' => 'foo'], $uri->getParameters());
@@ -476,21 +469,21 @@ class UriTest extends TestCase
 
     public function testGetParameters()
     {
-        $uri = new Uri('http', 'www.yahoo.com', '/foo', 'foo=bar&bar=foo');
+        $uri = new Uri('http://www.yahoo.com/foo?foo=bar&bar=foo');
 
         $this->assertEquals(['foo' => 'bar', 'bar' => 'foo'], $uri->getParameters());
     }
 
     public function testGetParameter()
     {
-        $uri = new Uri('http', 'www.yahoo.com', '/foo', 'foo=bar&bar=foo');
+        $uri = new Uri('http://www.yahoo.com/foo?foo=bar&bar=foo');
 
         $this->assertEquals('bar', $uri->getParameter('foo'));
     }
 
     public function testSetFragment()
     {
-        $uri = new Uri('http', 'www.yahoo.com', '/', null, 'foo');
+        $uri = new Uri('http://www.yahoo.com/#foo');
 
         $this->assertEquals('foo', $uri->getFragment());
         $this->assertEquals('http://www.yahoo.com/#foo', $uri->toString());

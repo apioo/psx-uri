@@ -21,6 +21,7 @@
 namespace PSX\Uri\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PSX\Uri\Exception\InvalidFormatException;
 use PSX\Uri\Url;
 
 /**
@@ -58,43 +59,38 @@ class UrlTest extends TestCase
         $this->assertEquals(null, $url->getFragment());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidUrl()
     {
+        $this->expectException(InvalidFormatException::class);
+
         new Url('foobar');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidUrlEmptyHost()
     {
+        $this->expectException(InvalidFormatException::class);
+
         new Url('foo://');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidUrlEmptyHostButPath()
     {
+        $this->expectException(InvalidFormatException::class);
+
         new Url('foo:///foo');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidUrlEmptyHostButQuery()
     {
+        $this->expectException(InvalidFormatException::class);
+
         new Url('foo://?foo=bar');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidUrlEmptyHostButFragment()
     {
+        $this->expectException(InvalidFormatException::class);
+
         new Url('foo://#foo');
     }
 
@@ -105,20 +101,18 @@ class UrlTest extends TestCase
         $this->assertEquals('http://www.yahoo.com:8080/', $uri->toString());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetPortInvalidRangeMin()
     {
+        $this->expectException(InvalidFormatException::class);
+
         $port = -1;
         $uri  = new Url('http://www.yahoo.com:' . $port . '/');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetPortInvalidRangeMax()
     {
+        $this->expectException(InvalidFormatException::class);
+
         $port = 0xFFFF + 1;
         $uri  = new Url('http://www.yahoo.com:' . $port . '/');
     }

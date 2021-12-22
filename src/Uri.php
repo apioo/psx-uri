@@ -30,99 +30,33 @@ namespace PSX\Uri;
  */
 class Uri implements UriInterface
 {
-    /**
-     * @var string
-     */
-    protected $scheme;
+    protected ?string $scheme = null;
+    protected ?string $authority = null;
+    protected ?string $path = null;
+    protected ?string $query = null;
+    protected ?string $fragment = null;
+    protected ?string $user = null;
+    protected ?string $password = null;
+    protected ?string $host = null;
+    protected ?int $port = null;
+    protected array $parameters = [];
 
-    /**
-     * @var string
-     */
-    protected $authority;
-
-    /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * @var string
-     */
-    protected $query;
-
-    /**
-     * @var string
-     */
-    protected $fragment;
-
-    /**
-     * @var string
-     */
-    protected $user;
-
-    /**
-     * @var string
-     */
-    protected $password;
-
-    /**
-     * @var string
-     */
-    protected $host;
-
-    /**
-     * @var int|null
-     */
-    protected $port;
-
-    /**
-     * @var array
-     */
-    protected $parameters;
-
-    /**
-     * @param string $uri
-     * @param string $authority
-     * @param string $path
-     * @param string $query
-     * @param string $fragment
-     */
-    public function __construct($uri, $authority = null, $path = null, $query = null, $fragment = null)
+    public function __construct(string|\Stringable $uri)
     {
-        if (func_num_args() == 1) {
-            $this->parse($uri);
-        } else {
-            $this->scheme    = $uri;
-            $this->authority = $authority;
-            $this->path      = $path;
-            $this->query     = $query;
-            $this->fragment  = $fragment;
-
-            $this->parseAuthority($authority);
-            $this->parseParameters($query);
-        }
+        $this->parse((string) $uri);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getScheme()
+    public function getScheme(): ?string
     {
         return $this->scheme;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getAuthority()
+    public function getAuthority(): ?string
     {
         return $this->authority;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         if (!empty($this->user)) {
             return $this->user . ($this->password !== null ? ':' . $this->password : '');
@@ -131,240 +65,117 @@ class Uri implements UriInterface
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getUser()
+    public function getUser(): ?string
     {
         return $this->user;
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getHost()
+    public function getHost(): ?string
     {
         return $this->host;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getPort()
+    public function getPort(): ?int
     {
         return $this->port;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getQuery()
+    public function getQuery(): ?string
     {
         return $this->query;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getFragment()
+    public function getFragment(): ?string
     {
         return $this->fragment;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function isAbsolute()
+    public function isAbsolute(): bool
     {
         return !empty($this->scheme);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getParameter($name)
+    public function getParameter($name): mixed
     {
-        return isset($this->parameters[$name]) ? $this->parameters[$name] : null;
+        return $this->parameters[$name] ?? null;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withScheme($scheme)
+    public function withScheme($scheme): static
     {
-        return new static(
-            $scheme,
-            $this->authority,
-            $this->path,
-            $this->query,
-            $this->fragment
-        );
+        $me = clone $this;
+        $me->scheme = $scheme;
+        return $me;
     }
 
-    /**
-     * @param string $authority
-     * @return static
-     */
-    public function withAuthority($authority)
+    public function withAuthority($authority): static
     {
-        return new static(
-            $this->scheme,
-            $authority,
-            $this->path,
-            $this->query,
-            $this->fragment
-        );
+        $me = clone $this;
+        $me->authority = $authority;
+        $this->parseAuthority($authority);
+        return $me;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo($user, $password = null): static
     {
-        if (!empty($user)) {
-            $userInfo  = $user . ($password !== null ? ':' . $password : '');
-            $authority = $userInfo . '@' . $this->host;
-        } else {
-            $authority = $this->host;
-        }
+        $me = clone $this;
+        $me->authority = self::buildAuthority($user, $password, $this->host, $this->port);
+        return $me;
 
-        if (!empty($this->port)) {
-            $authority.= ':' . $this->port;
-        }
-
-        return new static(
-            $this->scheme,
-            $authority,
-            $this->path,
-            $this->query,
-            $this->fragment
-        );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withHost($host)
+    public function withHost($host): static
     {
-        if (!empty($host)) {
-            $userInfo = $this->getUserInfo();
-            if (!empty($userInfo)) {
-                $authority = $userInfo . '@' . $host;
-            } else {
-                $authority = $host;
-            }
-
-            if (!empty($this->port)) {
-                $authority.= ':' . $this->port;
-            }
-        } else {
-            $authority = null;
-        }
-
-        return new static(
-            $this->scheme,
-            $authority,
-            $this->path,
-            $this->query,
-            $this->fragment
-        );
+        $me = clone $this;
+        $me->host = $host;
+        $me->authority = self::buildAuthority($this->user, $this->password, $host, $this->port);
+        return $me;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withPort($port)
+    public function withPort($port): static
     {
-        $userInfo = $this->getUserInfo();
-        if (!empty($userInfo)) {
-            $authority = $userInfo . '@' . $this->host;
-        } else {
-            $authority = $this->host;
-        }
-
-        if (!empty($port)) {
-            $authority.= ':' . $port;
-        }
-
-        return new static(
-            $this->scheme,
-            $authority,
-            $this->path,
-            $this->query,
-            $this->fragment
-        );
+        $me = clone $this;
+        $me->port = $port;
+        $me->authority = self::buildAuthority($this->user, $this->password, $this->host, $port);
+        return $me;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withPath($path)
+    public function withPath($path): static
     {
-        return new static(
-            $this->scheme,
-            $this->authority,
-            $path,
-            $this->query,
-            $this->fragment
-        );
+        $me = clone $this;
+        $me->path = $path;
+        return $me;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withQuery($query)
+    public function withQuery($query): static
     {
-        return new static(
-            $this->scheme,
-            $this->authority,
-            $this->path,
-            $query,
-            $this->fragment
-        );
+        $me = clone $this;
+        $me->query = $query;
+        return $me;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withFragment($fragment)
+    public function withFragment($fragment): static
     {
-        return new static(
-            $this->scheme,
-            $this->authority,
-            $this->path,
-            $this->query,
-            $fragment
-        );
+        $me = clone $this;
+        $me->fragment = $fragment;
+        return $me;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function withParameters(array $parameters)
+    public function withParameters(array $parameters): static
     {
         return $this->withQuery(http_build_query($parameters, '', '&'));
     }
@@ -375,29 +186,9 @@ class Uri implements UriInterface
      * @see http://tools.ietf.org/html/rfc3986#section-5.3
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
-        $result = '';
-
-        if (!empty($this->scheme)) {
-            $result.= $this->scheme . ':';
-        }
-
-        if (!empty($this->authority)) {
-            $result.= '//' . $this->authority;
-        }
-
-        $result.= $this->path;
-
-        if (!empty($this->query)) {
-            $result.= '?' . $this->query;
-        }
-
-        if (!empty($this->fragment)) {
-            $result.= '#' . $this->fragment;
-        }
-
-        return $result;
+        return self::build($this->scheme, $this->authority, $this->path, $this->query, $this->fragment);
     }
 
     /**
@@ -412,35 +203,34 @@ class Uri implements UriInterface
      * Parses the given URI into the components
      *
      * @see http://tools.ietf.org/html/rfc3986#appendix-B
-     * @param string $uri
      */
-    protected function parse($uri)
+    protected function parse(string $uri)
     {
-        $uri     = (string) $uri;
-        $matches = array();
-
+        $matches = [];
         preg_match('!' . self::getPattern() . '!', $uri, $matches);
 
-        $scheme    = isset($matches[2]) ? $matches[2] : null;
-        $authority = isset($matches[4]) ? $matches[4] : null;
-        $path      = isset($matches[5]) ? $matches[5] : null;
-        $query     = isset($matches[7]) ? $matches[7] : null;
-        $fragment  = isset($matches[9]) ? $matches[9] : null;
+        $authority = $matches[4] ?? null;
+        $query     = $matches[7] ?? null;
 
-        $this->scheme    = $scheme;
+        $this->scheme    = $matches[2] ?? null;
         $this->authority = $authority;
-        $this->path      = $path;
+        $this->path      = $matches[5] ?? null;
         $this->query     = $query;
-        $this->fragment  = $fragment;
+        $this->fragment  = $matches[9] ?? null;
 
         $this->parseAuthority($authority);
         $this->parseParameters($query);
     }
 
     /**
-     * @param string $authority
+     * @see http://tools.ietf.org/html/rfc3986#appendix-B
      */
-    protected function parseAuthority($authority)
+    public static function create(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment): self
+    {
+        return new self(self::build($scheme, $authority, $path, $query, $fragment));
+    }
+
+    protected function parseAuthority(?string $authority)
     {
         if (empty($authority)) {
             return;
@@ -471,7 +261,7 @@ class Uri implements UriInterface
         }
 
         if (!empty($userInfo)) {
-            if (strpos($userInfo, ':') !== false) {
+            if (str_contains($userInfo, ':')) {
                 $this->user     = strstr($userInfo, ':', true);
                 $this->password = substr(strstr($userInfo, ':'), 1);
             } else {
@@ -480,23 +270,61 @@ class Uri implements UriInterface
         }
     }
 
-    /**
-     * @param string $query
-     */
-    protected function parseParameters($query)
+    protected function parseParameters(?string $query)
     {
         if (!empty($query)) {
             parse_str($query, $this->parameters);
         } else {
-            $this->parameters = array();
+            $this->parameters = [];
         }
     }
 
     /**
      * @see https://tools.ietf.org/html/rfc3986#appendix-B
      */
-    public static function getPattern()
+    public static function getPattern(): string
     {
         return '^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?';
+    }
+
+    private static function build(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment): string
+    {
+        $result = '';
+
+        if (!empty($scheme)) {
+            $result.= $scheme . ':';
+        }
+
+        if (!empty($authority)) {
+            $result.= '//' . $authority;
+        }
+
+        $result.= $path;
+
+        if (!empty($query)) {
+            $result.= '?' . $query;
+        }
+
+        if (!empty($fragment)) {
+            $result.= '#' . $fragment;
+        }
+
+        return $result;
+    }
+
+    private static function buildAuthority(?string $user, ?string $password, ?string $host, ?int $port): ?string
+    {
+        if (!empty($user)) {
+            $userInfo  = $user . ($password !== null ? ':' . $password : '');
+            $authority = $userInfo . '@' . $host;
+        } else {
+            $authority = $host;
+        }
+
+        if (!empty($port)) {
+            $authority.= ':' . $port;
+        }
+
+        return $authority;
     }
 }

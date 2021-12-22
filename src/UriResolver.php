@@ -34,12 +34,8 @@ class UriResolver
 {
     /**
      * Resolves a base uri against a target uri
-     *
-     * @param \PSX\Uri\Uri $baseUri
-     * @param \PSX\Uri\Uri $targetUri
-     * @return \PSX\Uri\Uri
      */
-    public static function resolve(Uri $baseUri, Uri $targetUri)
+    public static function resolve(Uri $baseUri, Uri $targetUri): Uri
     {
         if (!$baseUri->isAbsolute()) {
             throw new InvalidArgumentException('Base uri must be absolute');
@@ -83,7 +79,7 @@ class UriResolver
                 $authority = $baseUri->getAuthority();
             }
 
-            return new Uri(
+            return Uri::create(
                 $baseUri->getScheme(),
                 $authority,
                 $path,
