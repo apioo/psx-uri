@@ -165,6 +165,7 @@ class Uri implements UriInterface
     {
         $me = clone $this;
         $me->query = $query;
+        $me->parseParameters($query);
         return $me;
     }
 
@@ -177,7 +178,10 @@ class Uri implements UriInterface
 
     public function withParameters(array $parameters): static
     {
-        return $this->withQuery(http_build_query($parameters, '', '&'));
+        $me = clone $this;
+        $me->query = http_build_query($parameters, '', '&');
+        $me->parameters = $parameters;
+        return $me;
     }
 
     /**
@@ -272,10 +276,9 @@ class Uri implements UriInterface
 
     protected function parseParameters(?string $query)
     {
+        $this->parameters = [];
         if (!empty($query)) {
             parse_str($query, $this->parameters);
-        } else {
-            $this->parameters = [];
         }
     }
 

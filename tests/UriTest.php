@@ -526,7 +526,12 @@ class UriTest extends TestCase
     {
         $uri = new Uri('http://www.yahoo.com/?foo=bar');
 
-        $this->assertEquals('http://www.yahoo.com/?bar=foo', $uri->withQuery('bar=foo')->toString());
+        $this->assertEquals(['foo' => 'bar'], $uri->getParameters());
+
+        $uri = $uri->withQuery('bar=foo');
+
+        $this->assertEquals(['bar' => 'foo'], $uri->getParameters());
+        $this->assertEquals('http://www.yahoo.com/?bar=foo', $uri->toString());
 
         $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
@@ -548,7 +553,12 @@ class UriTest extends TestCase
     {
         $uri = new Uri('http://www.yahoo.com/?foo=bar');
 
-        $this->assertEquals('http://www.yahoo.com/?bar=foo', $uri->withParameters(['bar' => 'foo'])->toString());
+        $this->assertEquals(['foo' => 'bar'], $uri->getParameters());
+
+        $uri = $uri->withParameters(['bar' => 'foo']);
+
+        $this->assertEquals(['bar' => 'foo'], $uri->getParameters());
+        $this->assertEquals('http://www.yahoo.com/?bar=foo', $uri->toString());
 
         $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
