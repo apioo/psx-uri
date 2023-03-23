@@ -211,7 +211,7 @@ class Uri implements UriInterface
             $result.= '//' . $this->authority;
         }
 
-        $result.= $this->path;
+        $result.= $this->path ?? '';
 
         if (!empty($this->query)) {
             $result.= '?' . $this->query;
@@ -317,6 +317,10 @@ class Uri implements UriInterface
 
     private static function buildAuthority(?string $user, ?string $password, ?string $host, ?int $port): ?string
     {
+        if ($host === null) {
+            return null;
+        }
+
         if (!empty($user)) {
             $userInfo  = $user . ($password !== null ? ':' . $password : '');
             $authority = $userInfo . '@' . $host;
