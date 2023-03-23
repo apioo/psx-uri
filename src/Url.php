@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,9 @@ namespace PSX\Uri;
 use PSX\Uri\Exception\InvalidFormatException;
 
 /**
- * Represents a URL. A string is only a valid URL if it has a scheme and host
- * part. If the URL is not valid an exception is thrown. Note if you want
- * display a URL you need to escape the URL according to the context. I.e. to
- * display the URL in a HTML context it is nessacary to use htmlspecialchars
- * since the URL could contain a XSS vector
+ * Class URL represents a Uniform Resource Locator, a pointer to a "resource" on the World Wide Web. A resource can be
+ * something as simple as a file or a directory, or it can be a reference to a more complicated object, such as a query
+ * to a database or to a search engine
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -35,18 +33,9 @@ use PSX\Uri\Exception\InvalidFormatException;
  */
 class Url extends Uri
 {
-    protected function parse($uri)
+    protected function __construct(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment)
     {
-        $url = (string) $uri;
-
-        // append http scheme for urls starting with //. Normally // means that
-        // we use the scheme from the base url but in this context there is no
-        // base url available so we assume http
-        if (substr($url, 0, 2) == '//') {
-            $url = 'http:' . $url;
-        }
-
-        parent::parse($url);
+        parent::__construct($scheme, $authority, $path, $query, $fragment);
 
         // we need at least a scheme and host
         if (empty($this->scheme) || empty($this->host)) {

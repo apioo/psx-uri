@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ namespace PSX\Uri\Tests;
 use PHPUnit\Framework\TestCase;
 use PSX\Uri\Exception\InvalidFormatException;
 use PSX\Uri\Url;
+use PSX\Uri\Urn;
 
 /**
  * UrlTest
@@ -35,8 +36,9 @@ class UrlTest extends TestCase
 {
     public function testUrl()
     {
-        $url = new Url('http://benutzername:passwort@hostname:8080/pfad?argument=wert#textanker');
+        $url = Url::parse('http://benutzername:passwort@hostname:8080/pfad?argument=wert#textanker');
 
+        $this->assertInstanceOf(Url::class, $url);
         $this->assertEquals('http', $url->getScheme());
         $this->assertEquals('benutzername:passwort', $url->getUserInfo());
         $this->assertEquals('hostname', $url->getHost());
@@ -48,7 +50,7 @@ class UrlTest extends TestCase
 
     public function testUrlIpv6()
     {
-        $url = new Url('http://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80/index.html');
+        $url = Url::parse('http://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80/index.html');
 
         $this->assertEquals('http', $url->getScheme());
         $this->assertEquals(null, $url->getUserInfo());
@@ -63,40 +65,40 @@ class UrlTest extends TestCase
     {
         $this->expectException(InvalidFormatException::class);
 
-        new Url('foobar');
+        Url::parse('foobar');
     }
 
     public function testInvalidUrlEmptyHost()
     {
         $this->expectException(InvalidFormatException::class);
 
-        new Url('foo://');
+        Url::parse('foo://');
     }
 
     public function testInvalidUrlEmptyHostButPath()
     {
         $this->expectException(InvalidFormatException::class);
 
-        new Url('foo:///foo');
+        Url::parse('foo:///foo');
     }
 
     public function testInvalidUrlEmptyHostButQuery()
     {
         $this->expectException(InvalidFormatException::class);
 
-        new Url('foo://?foo=bar');
+        Url::parse('foo://?foo=bar');
     }
 
     public function testInvalidUrlEmptyHostButFragment()
     {
         $this->expectException(InvalidFormatException::class);
 
-        new Url('foo://#foo');
+        Url::parse('foo://#foo');
     }
 
     public function testPort()
     {
-        $uri = new Url('http://www.yahoo.com:8080/');
+        $uri = Url::parse('http://www.yahoo.com:8080/');
 
         $this->assertEquals('http://www.yahoo.com:8080/', $uri->toString());
     }
@@ -106,7 +108,7 @@ class UrlTest extends TestCase
         $this->expectException(InvalidFormatException::class);
 
         $port = -1;
-        $uri  = new Url('http://www.yahoo.com:' . $port . '/');
+        $uri  = Url::parse('http://www.yahoo.com:' . $port . '/');
     }
 
     public function testSetPortInvalidRangeMax()
@@ -114,19 +116,12 @@ class UrlTest extends TestCase
         $this->expectException(InvalidFormatException::class);
 
         $port = 0xFFFF + 1;
-        $uri  = new Url('http://www.yahoo.com:' . $port . '/');
-    }
-
-    public function testShortUrls()
-    {
-        $url = new Url('//www.yahoo.com');
-
-        $this->assertEquals('http://www.yahoo.com', $url->toString());
+        $uri  = Url::parse('http://www.yahoo.com:' . $port . '/');
     }
 
     public function testUrlWithoutFile()
     {
-        $url = new Url('http://127.0.0.1/projects/foo/bar/?project=symfony%2Fsymfony&source=1&destination=2');
+        $url = Url::parse('http://127.0.0.1/projects/foo/bar/?project=symfony%2Fsymfony&source=1&destination=2');
 
         $this->assertEquals('http', $url->getScheme());
         $this->assertEquals(null, $url->getUserInfo());
@@ -139,7 +134,7 @@ class UrlTest extends TestCase
 
     public function testUrlFragmentEncoding()
     {
-        $url = new Url('http://127.0.0.1/foobar?bar=foo#!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~');
+        $url = Url::parse('http://127.0.0.1/foobar?bar=foo#!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~');
 
         $this->assertEquals('http', $url->getScheme());
         $this->assertEquals(null, $url->getUserInfo());

@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ class UriResolverTest extends TestCase
      */
     public function testResolveNormal($targetUri, $expected)
     {
-        $baseUri   = new Uri('http://a/b/c/d;p?q');
-        $targetUri = new Uri($targetUri);
+        $baseUri   = Uri::parse('http://a/b/c/d;p?q');
+        $targetUri = Uri::parse($targetUri);
 
         $this->assertEquals($expected, UriResolver::resolve($baseUri, $targetUri)->toString());
     }
 
-    public function uriResolveNormalProvider()
+    public function uriResolveNormalProvider(): array
     {
         return array(
             //['g:h', 'g:h'],
@@ -79,13 +79,13 @@ class UriResolverTest extends TestCase
      */
     public function testResolveAbnormal($targetUri, $expected)
     {
-        $baseUri   = new Uri('http://a/b/c/d;p?q');
-        $targetUri = new Uri($targetUri);
+        $baseUri   = Uri::parse('http://a/b/c/d;p?q');
+        $targetUri = Uri::parse($targetUri);
 
         $this->assertEquals($expected, UriResolver::resolve($baseUri, $targetUri)->toString());
     }
 
-    public function uriResolveAbnormalProvider()
+    public function uriResolveAbnormalProvider(): array
     {
         return array(
             ['../../../g', 'http://a/g'],
@@ -118,7 +118,7 @@ class UriResolverTest extends TestCase
         $this->assertEquals($expect, UriResolver::removeDotSegments($path));
     }
 
-    public function removeDotSegmentsProvider()
+    public function removeDotSegmentsProvider(): array
     {
         return [
             ['/a/b/c/./../../g', '/a/g'],

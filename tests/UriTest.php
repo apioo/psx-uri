@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ namespace PSX\Uri\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Uri\Uri;
+use PSX\Uri\Url;
 
 /**
  * UriTest
@@ -34,8 +35,9 @@ class UriTest extends TestCase
 {
     public function testRfcExample1()
     {
-        $uri = new Uri('ftp://ftp.is.co.za/rfc/rfc1808.txt');
+        $uri = Uri::parse('ftp://ftp.is.co.za/rfc/rfc1808.txt');
 
+        $this->assertInstanceOf(Uri::class, $uri);
         $this->assertEquals('ftp', $uri->getScheme());
         $this->assertEquals('ftp.is.co.za', $uri->getAuthority());
         $this->assertEquals(null, $uri->getUserInfo());
@@ -52,7 +54,7 @@ class UriTest extends TestCase
 
     public function testRfcExample2()
     {
-        $uri = new Uri('http://www.ietf.org/rfc/rfc2396.txt');
+        $uri = Uri::parse('http://www.ietf.org/rfc/rfc2396.txt');
 
         $this->assertEquals('http', $uri->getScheme());
         $this->assertEquals('www.ietf.org', $uri->getAuthority());
@@ -70,7 +72,7 @@ class UriTest extends TestCase
 
     public function testRfcExample3()
     {
-        $uri = new Uri('ldap://[2001:db8::7]/c=GB?objectClass?one');
+        $uri = Uri::parse('ldap://[2001:db8::7]/c=GB?objectClass?one');
 
         $this->assertEquals('ldap', $uri->getScheme());
         $this->assertEquals('[2001:db8::7]', $uri->getAuthority());
@@ -88,7 +90,7 @@ class UriTest extends TestCase
 
     public function testRfcExample3_1()
     {
-        $uri = new Uri('ldap://[2001:db8::7]:80/c=GB?objectClass?one');
+        $uri = Uri::parse('ldap://[2001:db8::7]:80/c=GB?objectClass?one');
 
         $this->assertEquals('ldap', $uri->getScheme());
         $this->assertEquals('[2001:db8::7]:80', $uri->getAuthority());
@@ -109,7 +111,7 @@ class UriTest extends TestCase
      */
     public function testRfcExample3_2()
     {
-        $uri = new Uri('ldap://foo@[2001:db8::7/c=GB?objectClass?one');
+        $uri = Uri::parse('ldap://foo@[2001:db8::7/c=GB?objectClass?one');
 
         $this->assertEquals('ldap', $uri->getScheme());
         $this->assertEquals('foo@[2001:db8::7', $uri->getAuthority());
@@ -127,7 +129,7 @@ class UriTest extends TestCase
 
     public function testRfcExample4()
     {
-        $uri = new Uri('mailto:John.Doe@example.com');
+        $uri = Uri::parse('mailto:John.Doe@example.com');
 
         $this->assertEquals('mailto', $uri->getScheme());
         $this->assertEquals(null, $uri->getAuthority());
@@ -145,7 +147,7 @@ class UriTest extends TestCase
 
     public function testRfcExample5()
     {
-        $uri = new Uri('mailto://John.Doe@example.com');
+        $uri = Uri::parse('mailto://John.Doe@example.com');
 
         $this->assertEquals('mailto', $uri->getScheme());
         $this->assertEquals('John.Doe@example.com', $uri->getAuthority());
@@ -163,7 +165,7 @@ class UriTest extends TestCase
 
     public function testRfcExample6()
     {
-        $uri = new Uri('news:comp.infosystems.www.servers.unix');
+        $uri = Uri::parse('news:comp.infosystems.www.servers.unix');
 
         $this->assertEquals('news', $uri->getScheme());
         $this->assertEquals(null, $uri->getAuthority());
@@ -181,7 +183,7 @@ class UriTest extends TestCase
 
     public function testRfcExample7()
     {
-        $uri = new Uri('tel:+1-816-555-1212');
+        $uri = Uri::parse('tel:+1-816-555-1212');
 
         $this->assertEquals('tel', $uri->getScheme());
         $this->assertEquals(null, $uri->getAuthority());
@@ -199,7 +201,7 @@ class UriTest extends TestCase
 
     public function testRfcExample8()
     {
-        $uri = new Uri('telnet://192.0.2.16:80/');
+        $uri = Uri::parse('telnet://192.0.2.16:80/');
 
         $this->assertEquals('telnet', $uri->getScheme());
         $this->assertEquals('192.0.2.16:80', $uri->getAuthority());
@@ -217,7 +219,7 @@ class UriTest extends TestCase
 
     public function testRfcExample9()
     {
-        $uri = new Uri('urn:oasis:names:specification:docbook:dtd:xml:4.1.2');
+        $uri = Uri::parse('urn:oasis:names:specification:docbook:dtd:xml:4.1.2');
 
         $this->assertEquals('urn', $uri->getScheme());
         $this->assertEquals(null, $uri->getAuthority());
@@ -235,7 +237,7 @@ class UriTest extends TestCase
 
     public function testFull()
     {
-        $uri = new Uri('foo://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('foo://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('foo', $uri->getScheme());
         $this->assertEquals('user:password@example.com:8042', $uri->getAuthority());
@@ -253,7 +255,7 @@ class UriTest extends TestCase
 
     public function testRelativeUrl()
     {
-        $uri = new Uri('/foo/bar?param=value');
+        $uri = Uri::parse('/foo/bar?param=value');
 
         $this->assertEquals(null, $uri->getScheme());
         $this->assertEquals(null, $uri->getAuthority());
@@ -269,7 +271,7 @@ class UriTest extends TestCase
 
     public function testUrlNoScheme()
     {
-        $uri = new Uri('//google.com/foo/bar?foo=bar');
+        $uri = Uri::parse('//google.com/foo/bar?foo=bar');
 
         $this->assertEquals(null, $uri->getScheme());
         $this->assertEquals('google.com', $uri->getAuthority());
@@ -285,7 +287,7 @@ class UriTest extends TestCase
 
     public function testFileWindowsScheme()
     {
-        $uri = new Uri('file:///c:/somedir/file.txt');
+        $uri = Uri::parse('file:///c:/somedir/file.txt');
 
         $this->assertEquals('file', $uri->getScheme());
         $this->assertEquals(null, $uri->getAuthority());
@@ -301,7 +303,7 @@ class UriTest extends TestCase
 
     public function testUrlEncode()
     {
-        $uri = new Uri('http://foo.com?url=' . urlencode('http://google.de'));
+        $uri = Uri::parse('http://foo.com?url=' . urlencode('http://google.de'));
 
         $this->assertEquals('http', $uri->getScheme());
         $this->assertEquals('foo.com', $uri->getAuthority());
@@ -319,7 +321,7 @@ class UriTest extends TestCase
 
     public function testNoUrlEncode()
     {
-        $uri = new Uri('http://foo.com?url=http://google.de');
+        $uri = Uri::parse('http://foo.com?url=http://google.de');
 
         $this->assertEquals('http', $uri->getScheme());
         $this->assertEquals('foo.com', $uri->getAuthority());
@@ -337,14 +339,14 @@ class UriTest extends TestCase
 
     public function testEmptyString()
     {
-        $uri = new Uri('');
+        $uri = Uri::parse('');
 
         $this->assertEquals('', $uri->toString());
     }
 
     public function testNonEmptyString()
     {
-        $uri = new Uri('foo');
+        $uri = Uri::parse('foo');
 
         $this->assertEquals('foo', $uri->toString());
     }
@@ -357,7 +359,7 @@ class UriTest extends TestCase
      */
     public function testToString($rawUri)
     {
-        $uri = new Uri($rawUri);
+        $uri = Uri::parse($rawUri);
 
         $this->assertEquals($rawUri, $uri->toString(), $rawUri);
     }
@@ -388,7 +390,7 @@ class UriTest extends TestCase
 
     public function testSetScheme()
     {
-        $uri = new Uri('https://www.yahoo.com');
+        $uri = Uri::parse('https://www.yahoo.com');
 
         $this->assertEquals('https', $uri->getScheme());
         $this->assertEquals('https://www.yahoo.com', $uri->toString());
@@ -396,7 +398,7 @@ class UriTest extends TestCase
 
     public function testSetUser()
     {
-        $uri = new Uri('http://foo@www.yahoo.com');
+        $uri = Uri::parse('http://foo@www.yahoo.com');
 
         $this->assertEquals('foo', $uri->getUserInfo());
         $this->assertEquals('foo', $uri->getUser());
@@ -405,7 +407,7 @@ class UriTest extends TestCase
 
     public function testSetPassword()
     {
-        $uri = new Uri('http://www.yahoo.com');
+        $uri = Uri::parse('http://www.yahoo.com');
 
         $this->assertEquals(null, $uri->getPassword());
         $this->assertEquals('http://www.yahoo.com', $uri->toString());
@@ -413,7 +415,7 @@ class UriTest extends TestCase
 
     public function testSetUserPassword()
     {
-        $uri = new Uri('http://foo:bar@www.yahoo.com');
+        $uri = Uri::parse('http://foo:bar@www.yahoo.com');
 
         $this->assertEquals('foo:bar', $uri->getUserInfo());
         $this->assertEquals('foo', $uri->getUser());
@@ -423,7 +425,7 @@ class UriTest extends TestCase
 
     public function testSetHost()
     {
-        $uri = new Uri('http://google.com');
+        $uri = Uri::parse('http://google.com');
 
         $this->assertEquals('google.com', $uri->getAuthority());
         $this->assertEquals('google.com', $uri->getHost());
@@ -433,7 +435,7 @@ class UriTest extends TestCase
 
     public function testSetPort()
     {
-        $uri = new Uri('http://www.yahoo.com:8080');
+        $uri = Uri::parse('http://www.yahoo.com:8080');
 
         $this->assertEquals('www.yahoo.com:8080', $uri->getAuthority());
         $this->assertEquals('www.yahoo.com', $uri->getHost());
@@ -443,7 +445,7 @@ class UriTest extends TestCase
 
     public function testSetPath()
     {
-        $uri = new Uri('http://www.yahoo.com/foo');
+        $uri = Uri::parse('http://www.yahoo.com/foo');
 
         $this->assertEquals('/foo', $uri->getPath());
         $this->assertEquals('http://www.yahoo.com/foo', $uri->toString());
@@ -451,7 +453,7 @@ class UriTest extends TestCase
 
     public function testSetQuery()
     {
-        $uri = new Uri('http://www.yahoo.com/?foo=bar&bar=foo');
+        $uri = Uri::parse('http://www.yahoo.com/?foo=bar&bar=foo');
 
         $this->assertEquals('foo=bar&bar=foo', $uri->getQuery());
         $this->assertEquals(['foo' => 'bar', 'bar' => 'foo'], $uri->getParameters());
@@ -460,30 +462,30 @@ class UriTest extends TestCase
 
     public function testIsAbsolute()
     {
-        $uri = new Uri('http://www.yahoo.com/foo?foo=bar&bar=foo');
+        $uri = Uri::parse('http://www.yahoo.com/foo?foo=bar&bar=foo');
         $this->assertTrue($uri->isAbsolute());
 
-        $uri = new Uri('/foo?foo=bar&bar=foo');
+        $uri = Uri::parse('/foo?foo=bar&bar=foo');
         $this->assertFalse($uri->isAbsolute());
     }
 
     public function testGetParameters()
     {
-        $uri = new Uri('http://www.yahoo.com/foo?foo=bar&bar=foo');
+        $uri = Uri::parse('http://www.yahoo.com/foo?foo=bar&bar=foo');
 
         $this->assertEquals(['foo' => 'bar', 'bar' => 'foo'], $uri->getParameters());
     }
 
     public function testGetParameter()
     {
-        $uri = new Uri('http://www.yahoo.com/foo?foo=bar&bar=foo');
+        $uri = Uri::parse('http://www.yahoo.com/foo?foo=bar&bar=foo');
 
         $this->assertEquals('bar', $uri->getParameter('foo'));
     }
 
     public function testSetFragment()
     {
-        $uri = new Uri('http://www.yahoo.com/#foo');
+        $uri = Uri::parse('http://www.yahoo.com/#foo');
 
         $this->assertEquals('foo', $uri->getFragment());
         $this->assertEquals('http://www.yahoo.com/#foo', $uri->toString());
@@ -491,40 +493,40 @@ class UriTest extends TestCase
 
     public function testWithScheme()
     {
-        $uri = new Uri('http://www.yahoo.com');
+        $uri = Uri::parse('http://www.yahoo.com');
 
         $this->assertEquals('https://www.yahoo.com', $uri->withScheme('https')->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('https://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose', $uri->withScheme('https')->toString());
     }
 
     public function testWithAuthority()
     {
-        $uri = new Uri('http://www.yahoo.com');
+        $uri = Uri::parse('http://www.yahoo.com');
 
         $this->assertEquals('http://google.com', $uri->withAuthority('google.com')->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://google.com/over/there?name=ferret&foo=bar#nose', $uri->withAuthority('google.com')->toString());
     }
 
     public function testWithPath()
     {
-        $uri = new Uri('http://www.yahoo.com/foo/bar');
+        $uri = Uri::parse('http://www.yahoo.com/foo/bar');
 
         $this->assertEquals('http://www.yahoo.com/bar', $uri->withPath('/bar')->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@example.com:8042/bar?name=ferret&foo=bar#nose', $uri->withPath('/bar')->toString());
     }
 
     public function testWithQuery()
     {
-        $uri = new Uri('http://www.yahoo.com/?foo=bar');
+        $uri = Uri::parse('http://www.yahoo.com/?foo=bar');
 
         $this->assertEquals(['foo' => 'bar'], $uri->getParameters());
 
@@ -533,25 +535,25 @@ class UriTest extends TestCase
         $this->assertEquals(['bar' => 'foo'], $uri->getParameters());
         $this->assertEquals('http://www.yahoo.com/?bar=foo', $uri->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@example.com:8042/over/there?bar=foo#nose', $uri->withQuery('bar=foo')->toString());
     }
 
     public function testWithFragment()
     {
-        $uri = new Uri('http://www.yahoo.com/#foo');
+        $uri = Uri::parse('http://www.yahoo.com/#foo');
 
         $this->assertEquals('http://www.yahoo.com/#bar', $uri->withFragment('bar')->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#bar', $uri->withFragment('bar')->toString());
     }
 
     public function testWithParameters()
     {
-        $uri = new Uri('http://www.yahoo.com/?foo=bar');
+        $uri = Uri::parse('http://www.yahoo.com/?foo=bar');
 
         $this->assertEquals(['foo' => 'bar'], $uri->getParameters());
 
@@ -560,19 +562,19 @@ class UriTest extends TestCase
         $this->assertEquals(['bar' => 'foo'], $uri->getParameters());
         $this->assertEquals('http://www.yahoo.com/?bar=foo', $uri->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@example.com:8042/over/there?bar=foo#nose', $uri->withParameters(['bar' => 'foo'])->toString());
     }
 
     public function testWithUserInfo()
     {
-        $uri = new Uri('http://www.yahoo.com/');
+        $uri = Uri::parse('http://www.yahoo.com/');
 
         $this->assertEquals('http://foo@www.yahoo.com/', $uri->withUserInfo('foo')->toString());
         $this->assertEquals('http://foo:bar@www.yahoo.com/', $uri->withUserInfo('foo', 'bar')->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://example.com:8042/over/there?name=ferret&foo=bar#nose', $uri->withUserInfo('')->toString());
         $this->assertEquals('http://foo@example.com:8042/over/there?name=ferret&foo=bar#nose', $uri->withUserInfo('foo')->toString());
@@ -581,33 +583,33 @@ class UriTest extends TestCase
 
     public function testWithHost()
     {
-        $uri = new Uri('http://www.yahoo.com/');
+        $uri = Uri::parse('http://www.yahoo.com/');
 
         $this->assertEquals('http://google.com/', $uri->withHost('google.com')->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@google.com:8042/over/there?name=ferret&foo=bar#nose', $uri->withHost('google.com')->toString());
 
-        $uri = new Uri('http://www.yahoo.com/foo/');
+        $uri = Uri::parse('http://www.yahoo.com/foo/');
 
         $this->assertEquals('http:/foo/', $uri->withHost(null)->toString());
     }
 
     public function testWithPort()
     {
-        $uri = new Uri('http://www.yahoo.com/');
+        $uri = Uri::parse('http://www.yahoo.com/');
 
         $this->assertEquals('http://www.yahoo.com:8080/', $uri->withPort(8080)->toString());
 
-        $uri = new Uri('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
+        $uri = Uri::parse('http://user:password@example.com:8042/over/there?name=ferret&foo=bar#nose');
 
         $this->assertEquals('http://user:password@example.com:8080/over/there?name=ferret&foo=bar#nose', $uri->withPort(8080)->toString());
     }
 
     public function test__toString()
     {
-        $uri = new Uri('http://www.yahoo.com/');
+        $uri = Uri::parse('http://www.yahoo.com/');
 
         $this->assertEquals('http://www.yahoo.com/', (string) $uri);
     }

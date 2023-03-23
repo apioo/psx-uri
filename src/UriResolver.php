@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class UriResolver
                         $path = self::merge($baseUri->getPath(), '');
                     }
                 } else {
-                    if (substr($path, 0, 1) == '/') {
+                    if (str_starts_with($path, '/')) {
                         $path = self::removeDotSegments($path);
                     } else {
                         $path = self::merge($baseUri->getPath(), $path);
@@ -79,7 +79,7 @@ class UriResolver
                 $authority = $baseUri->getAuthority();
             }
 
-            return Uri::create(
+            return Uri::of(
                 $baseUri->getScheme(),
                 $authority,
                 $path,
@@ -89,11 +89,7 @@ class UriResolver
         }
     }
 
-    /**
-     * @param string $relativePath
-     * @return string
-     */
-    public static function removeDotSegments($relativePath)
+    public static function removeDotSegments(string $relativePath): string
     {
         $parts = explode('/', $relativePath);
         $path  = array();
@@ -111,14 +107,14 @@ class UriResolver
 
         $resolvedPath = implode('/', $path);
 
-        if (substr($relativePath, 0, 1) == '/') {
+        if (str_starts_with($relativePath, '/')) {
             $resolvedPath = '/' . $resolvedPath;
         }
 
         if (trim($resolvedPath, '/') != '' && (
-            substr($relativePath, -1) == '/' ||
-            substr($relativePath, -2) == '/.' ||
-            substr($relativePath, -3) == '/..')) {
+            str_ends_with($relativePath, '/') ||
+            str_ends_with($relativePath, '/.') ||
+            str_ends_with($relativePath, '/..'))) {
             $resolvedPath = $resolvedPath . '/';
         }
 
@@ -127,12 +123,8 @@ class UriResolver
 
     /**
      * Percent encodes a value
-     *
-     * @param string $value
-     * @param boolean $preventDoubleEncode
-     * @return string
      */
-    public static function percentEncode($value, $preventDoubleEncode = true)
+    public static function percentEncode(string $value, bool $preventDoubleEncode = true): string
     {
         $len = strlen($value);
         $val = '';
@@ -180,7 +172,7 @@ class UriResolver
         return $val;
     }
 
-    protected static function merge($basePath, $targetPath)
+    protected static function merge(string $basePath, string $targetPath): string
     {
         $pos = strrpos($basePath, '/');
 

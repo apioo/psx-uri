@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,29 +21,39 @@
 namespace PSX\Uri;
 
 /**
- * Uri
+ * Represents a Uniform Resource Identifier (URI) reference
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  * @see     http://www.ietf.org/rfc/rfc3986.txt
+ *
+ * @psalm-consistent-constructor
  */
 class Uri implements UriInterface
 {
-    protected ?string $scheme = null;
-    protected ?string $authority = null;
-    protected ?string $path = null;
-    protected ?string $query = null;
-    protected ?string $fragment = null;
+    protected ?string $scheme;
+    protected ?string $authority;
+    protected ?string $path;
+    protected ?string $query;
+    protected ?string $fragment;
+
     protected ?string $user = null;
     protected ?string $password = null;
     protected ?string $host = null;
     protected ?int $port = null;
     protected array $parameters = [];
 
-    public function __construct(string|\Stringable $uri)
+    protected function __construct(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment)
     {
-        $this->parse((string) $uri);
+        $this->scheme = $scheme;
+        $this->authority = $authority;
+        $this->path = $path;
+        $this->query = $query;
+        $this->fragment = $fragment;
+
+        $this->parseAuthority($authority);
+        $this->parseParameters($query);
     }
 
     public function getScheme(): string
@@ -110,7 +120,7 @@ class Uri implements UriInterface
         return $this->parameters;
     }
 
-    public function getParameter($name): mixed
+    public function getParameter(string $name): mixed
     {
         return $this->parameters[$name] ?? null;
     }
@@ -122,7 +132,7 @@ class Uri implements UriInterface
         return $me;
     }
 
-    public function withAuthority($authority): static
+    public function withAuthority(string $authority): static
     {
         $me = clone $this;
         $me->authority = $authority;
@@ -188,11 +198,30 @@ class Uri implements UriInterface
      * Returns the string representation of the URI
      *
      * @see http://tools.ietf.org/html/rfc3986#section-5.3
-     * @return string
      */
     public function toString(): string
     {
-        return self::build($this->scheme, $this->authority, $this->path, $this->query, $this->fragment);
+        $result = '';
+
+        if (!empty($this->scheme)) {
+            $result.= $this->scheme . ':';
+        }
+
+        if (!empty($this->authority)) {
+            $result.= '//' . $this->authority;
+        }
+
+        $result.= $this->path;
+
+        if (!empty($this->query)) {
+            $result.= '?' . $this->query;
+        }
+
+        if (!empty($this->fragment)) {
+            $result.= '#' . $this->fragment;
+        }
+
+        return $result;
     }
 
     /**
@@ -208,33 +237,29 @@ class Uri implements UriInterface
      *
      * @see http://tools.ietf.org/html/rfc3986#appendix-B
      */
-    protected function parse(string $uri)
+    public static function parse(string $uri): static
     {
         $matches = [];
         preg_match('!' . self::getPattern() . '!', $uri, $matches);
 
-        $authority = $matches[4] ?? null;
-        $query     = $matches[7] ?? null;
-
-        $this->scheme    = $matches[2] ?? null;
-        $this->authority = $authority;
-        $this->path      = $matches[5] ?? null;
-        $this->query     = $query;
-        $this->fragment  = $matches[9] ?? null;
-
-        $this->parseAuthority($authority);
-        $this->parseParameters($query);
+        return new static(
+            $matches[2] ?? null,
+            $matches[4] ?? null,
+            $matches[5] ?? null,
+            $matches[7] ?? null,
+            $matches[9] ?? null,
+        );
     }
 
     /**
      * @see http://tools.ietf.org/html/rfc3986#appendix-B
      */
-    public static function create(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment): self
+    public static function of(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment): static
     {
-        return new self(self::build($scheme, $authority, $path, $query, $fragment));
+        return new static($scheme, $authority, $path, $query, $fragment);
     }
 
-    protected function parseAuthority(?string $authority)
+    protected function parseAuthority(?string $authority): void
     {
         if (empty($authority)) {
             return;
@@ -274,7 +299,7 @@ class Uri implements UriInterface
         }
     }
 
-    protected function parseParameters(?string $query)
+    protected function parseParameters(?string $query): void
     {
         $this->parameters = [];
         if (!empty($query)) {
@@ -288,31 +313,6 @@ class Uri implements UriInterface
     public static function getPattern(): string
     {
         return '^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?';
-    }
-
-    private static function build(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment): string
-    {
-        $result = '';
-
-        if (!empty($scheme)) {
-            $result.= $scheme . ':';
-        }
-
-        if (!empty($authority)) {
-            $result.= '//' . $authority;
-        }
-
-        $result.= $path;
-
-        if (!empty($query)) {
-            $result.= '?' . $query;
-        }
-
-        if (!empty($fragment)) {
-            $result.= '#' . $fragment;
-        }
-
-        return $result;
     }
 
     private static function buildAuthority(?string $user, ?string $password, ?string $host, ?int $port): ?string

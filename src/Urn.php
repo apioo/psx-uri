@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,7 @@ use InvalidArgumentException;
 use PSX\Uri\Exception\InvalidFormatException;
 
 /**
- * Represents a URN. This class exists mostly to express in your code that
- * you expect/return a URN. Also the value must have "urn" as scheme else an
- * exception is thrown
+ * Urn
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -37,6 +35,20 @@ class Urn extends Uri
 {
     protected ?string $nid = null;
     protected ?string $nss = null;
+
+    protected function __construct(?string $scheme, ?string $authority, ?string $path, ?string $query, ?string $fragment)
+    {
+        parent::__construct(strtolower($scheme ?? ''), $authority, rawurldecode(strtolower($path ?? '')), $query, $fragment);
+
+        // must have an urn scheme and path part
+        if ($this->scheme != 'urn' || empty($this->path)) {
+            throw new InvalidFormatException('Invalid urn syntax');
+        }
+
+        // parse
+        $this->nid = strstr($this->path, ':', true);
+        $this->nss = substr(strstr($this->path, ':'), 1);
+    }
 
     /**
      * Returns the NID (Namespace Identifier)
@@ -54,28 +66,11 @@ class Urn extends Uri
         return $this->nss;
     }
 
-    protected function parse($uri)
-    {
-        // URNs are case insensitive
-        $urn = strtolower(rawurldecode((string) $uri));
-
-        parent::parse($urn);
-
-        // must have an urn scheme and path part
-        if ($this->scheme != 'urn' || empty($this->path)) {
-            throw new InvalidFormatException('Invalid urn syntax');
-        }
-
-        // parse
-        $this->nid = strstr($this->path, ':', true);
-        $this->nss = substr(strstr($this->path, ':'), 1);
-    }
-
-    protected function parseAuthority($authority)
+    protected function parseAuthority(?string $authority): void
     {
     }
 
-    protected function parseParameters($query)
+    protected function parseParameters(?string $query): void
     {
     }
 }

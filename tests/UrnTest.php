@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 namespace PSX\Uri\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PSX\Uri\Exception\InvalidFormatException;
 use PSX\Uri\Urn;
 
 /**
@@ -34,20 +35,20 @@ class UrnTest extends TestCase
 {
     public function testUrn()
     {
-        $urn = new Urn('urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6');
+        $urn = Urn::parse('urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6');
 
+        $this->assertInstanceOf(Urn::class, $urn);
         $this->assertEquals('urn', $urn->getScheme());
         $this->assertEquals('uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6', $urn->getPath());
         $this->assertEquals('uuid', $urn->getNid());
         $this->assertEquals('f81d4fae-7dec-11d0-a765-00a0c91e6bf6', $urn->getNss());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidUrn()
     {
-        new Urn('foobar');
+        $this->expectException(InvalidFormatException::class);
+
+        Urn::parse('foobar');
     }
 
     public function testUrnCompare()
@@ -62,7 +63,7 @@ class UrnTest extends TestCase
         );
 
         foreach ($urns as $rawUrn) {
-            $urn = new Urn($rawUrn);
+            $urn = Urn::parse($rawUrn);
 
             $this->assertEquals('urn:foo:a123,456', $urn->__toString());
         }
