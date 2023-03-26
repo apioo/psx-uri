@@ -30,7 +30,7 @@ namespace PSX\Uri;
  *
  * @psalm-consistent-constructor
  */
-class Uri implements UriInterface
+class Uri implements UriInterface, \JsonSerializable, \Stringable
 {
     protected ?string $scheme;
     protected ?string $authority;
@@ -224,10 +224,12 @@ class Uri implements UriInterface
         return $result;
     }
 
-    /**
-     * @return string
-     */
     public function __toString()
+    {
+        return $this->toString();
+    }
+
+    public function jsonSerialize(): string
     {
         return $this->toString();
     }
