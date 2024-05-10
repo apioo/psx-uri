@@ -224,7 +224,7 @@ class Uri implements UriInterface, \JsonSerializable, \Stringable
         return $result;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }
