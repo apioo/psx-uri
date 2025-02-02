@@ -268,7 +268,7 @@ class Uri implements UriInterface, \JsonSerializable, \Stringable
         }
 
         $userInfo = strstr($authority, '@', true);
-        $part     = $userInfo === false ? $authority : substr(strstr($authority, '@'), 1);
+        $part     = $userInfo === false ? $authority : substr((string) strstr($authority, '@'), 1);
 
         // in case of ipv6
         if (isset($part[0]) && $part[0] == '[') {
@@ -287,16 +287,27 @@ class Uri implements UriInterface, \JsonSerializable, \Stringable
                 $this->host = $part;
             } else {
                 $this->host = $host;
-                $this->port = (int) substr(strstr($part, ':'), 1);
+
+                $port = strstr($part, ':');
+                if ($port !== false) {
+                    $this->port = (int) substr($port, 1);
+                }
             }
         }
 
         if (!empty($userInfo)) {
             if (str_contains($userInfo, ':')) {
-                $this->user     = strstr($userInfo, ':', true);
-                $this->password = substr(strstr($userInfo, ':'), 1);
+                $user = strstr($userInfo, ':', true);
+                if ($user !== false) {
+                    $this->user = $user;
+                }
+
+                $password = strstr($userInfo, ':');
+                if ($password !== false) {
+                    $this->password = substr($password, 1);
+                }
             } else {
-                $this->user     = $userInfo;
+                $this->user = $userInfo;
             }
         }
     }

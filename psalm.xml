@@ -14,5 +14,7 @@
     </projectFiles>
     <issueHandlers>
         <RiskyTruthyFalsyComparison errorLevel="suppress" />
+        <UnusedClass errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
     </issueHandlers>
 </psalm>

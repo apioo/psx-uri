@@ -46,8 +46,15 @@ class Urn extends Uri
         }
 
         // parse
-        $this->nid = strstr($this->path, ':', true);
-        $this->nss = substr(strstr($this->path, ':'), 1);
+        $nid = strstr($this->path, ':', true);
+        if ($nid !== false) {
+            $this->nid = $nid;
+        }
+
+        $nss = strstr($this->path, ':');
+        if ($nss !== false) {
+            $this->nss = substr($nss, 1);
+        }
     }
 
     /**
