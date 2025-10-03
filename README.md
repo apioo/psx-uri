@@ -1,7 +1,5 @@
 
-# Uri
-
-## About
+# URI
 
 Library which contains value objects to represent URI, URL and URNs. The value
 objects are immutable so in case you change a value through a with* method you
